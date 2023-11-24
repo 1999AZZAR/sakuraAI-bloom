@@ -162,7 +162,7 @@ We welcome contributions to SakuraAI Bloom. If you have ideas for new features, 
 
 ## License
 
-SakuraAI Bloom is licensed under the [MIT License](LICENSE).
+SakuraAI Bloom is licensed under the [GPL-3.0 License](LICENSE).
 
 Feel free to explore, engage, and contribute to make SakuraAI Bloom even better!
 
