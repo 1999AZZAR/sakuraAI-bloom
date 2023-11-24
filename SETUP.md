@@ -39,7 +39,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
    Clone the SakuraAI Bloom repository to your local machine.
 
    ```bash
-   git clone https://github.com/your-username/sakuraai-bloom.git
+   git clone https://github.com/1999AZZAR/sakuraAI_Bloom.git
    ```
 
 2. **Navigate to the Project Directory:**
