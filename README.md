@@ -6,16 +6,17 @@ SakuraAI Bloom is an advanced chatbot with versatile capabilities, designed to e
 
 1. [Introduction](#introduction)
 2. [Features and Details](#features-and-details)
-    - [Text Generation and chat  Module](#text-generation-module-chat-module)
+    - [Text Generation and chat Module](#text-generation-and-chat-module)
     - [Image Generation Module](#image-generation-module)
     - [User Data Management](#user-data-management)
 3. [Setup](#setup)
 4. [Usage](#usage)
+    - [Example](#example)
 5. [Flowchart](#flowchart)
 6. [Folder Structure](#folder-scructure)
-7. [Contributing](#contributing)
-8. [License](#license)
-9. [Example](#example)
+7. [Acknowledgments](#acknowledgments)
+8. [Contributing](#contributing)
+9. [License](#license)
 
 ## Introduction
 
@@ -23,7 +24,7 @@ SakuraAI Bloom is powered by advanced AI models and designed to operate seamless
 
 ## Features and Details
 
-### Text Generation Module Chat Module
+### Text Generation and Chat Module
 
 SakuraAI Bloom seamlessly integrates its chat and text generation module into a unified system. This module harnesses state-of-the-art language models for natural and dynamic conversations, ensuring comprehensive understanding and contextual responses to user inputs. Supporting multi-turn interactions, it elevates engagement levels.
 
@@ -50,6 +51,10 @@ To set up SakuraAI Bloom, follow the instructions in the [SETUP.md](SETUP.md) fi
 ## Usage
 
 To use SakuraAI Bloom, interact with it through your preferred messaging platform. Simply start a conversation, provide prompts for text or image generation, and enjoy the personalized and creative responses.
+
+### Example
+
+Explore SakuraAI Bloom in action on [Telegram](https://t.me/SakuraAI_bot). Engage in dynamic conversations, generate creative text, and experiment with image creation. Enjoy the personalized and imaginative responses!
 
 ## Flowchart
 
@@ -144,6 +149,7 @@ sakuraAI_Bloom/
 │   ├── palmai_helper.py
 │   ├── datamanager.py
 │   ├── main.py
+│   ├── requirements.txt
 │   ├── .env
 │
 ├── database/
@@ -156,6 +162,24 @@ sakuraAI_Bloom/
 ├── README.md
 ```
 
+## Acknowledgments
+
+I would like to acknowledge the foundational work and separate modules that contributed to the development of SakuraAI Bloom. Each module represents a distinct aspect of the bot's capabilities, and they are hosted in separate repositories:
+
+1. **Text Generation and Chat Module:**
+   - [Repository](https://github.com/1999AZZAR/Palm-powered-telegram-bot)
+   - This module focuses on seamless chat interactions and creative text generation, utilizing the Palm 2 AI from [Google's Palm2 Project](https://ai.google/discover/palm2/).
+
+2. **Image Generation Module:**
+   - [Repository](https://github.com/1999AZZAR/telegram-image-generation-bot)
+   - The image generation module empowers SakuraAI Bloom to create visually stunning images based on user prompts, using the Stability AI platform from [Stability AI](https://platform.stability.ai/).
+
+3. **Other Functions (TTS and Translate):**
+   - [Repository](https://github.com/1999AZZAR/Telegram-Bot-Playground)
+   - This module encompasses additional functionalities such as text-to-speech (TTS) and translation, adding versatility to SakuraAI Bloom's capabilities. The Palm prototyping is done using [MakerSuite](https://makersuite.google.com/).
+
+I appreciate the effort and innovation invested in each module, and extend thanks to [Stability AI](https://platform.stability.ai/) and [Google's Palm2 Project](https://ai.google/discover/palm2/) for providing the APIs that enhance SakuraAI Bloom's functionality.
+
 ## Contributing
 
 We welcome contributions to SakuraAI Bloom. If you have ideas for new features, improvements, or bug fixes, please check our [Contribution Guidelines](CONTRIBUTING.md).
@@ -165,7 +189,3 @@ We welcome contributions to SakuraAI Bloom. If you have ideas for new features, 
 SakuraAI Bloom is licensed under the [GPL-3.0 License](LICENSE.md).
 
 Feel free to explore, engage, and contribute to make SakuraAI Bloom even better!
-
-## Example
-
-Explore SakuraAI Bloom in action on [Telegram](https://t.me/SakuraAI_bot). Engage in dynamic conversations, generate creative text, and experiment with image creation. Enjoy the personalized and imaginative responses!

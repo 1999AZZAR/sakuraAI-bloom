@@ -12,6 +12,7 @@ sakuraAI_Bloom/
 │   ├── palmai_helper.py
 │   ├── datamanager.py
 │   ├── main.py
+│   ├── requirements.txt
 │   ├── .env
 │
 ├── database/

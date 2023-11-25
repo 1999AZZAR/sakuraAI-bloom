@@ -49,7 +49,7 @@ This project and everyone participating in it are governed by the [SakuraAI Bloo
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the GPL-3.0 License. See the [LICENSE](LICENSE) file for details.
+By contributing, you agree that your contributions will be licensed under the GPL-3.0 License. See the [LICENSE](LICENSE.md) file for details.
 
 ---
 
