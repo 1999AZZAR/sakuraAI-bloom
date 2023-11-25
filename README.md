@@ -25,11 +25,11 @@ SakuraAI Bloom is powered by advanced AI models and designed to operate seamless
 
 ### Text Generation Module Chat Module
 
-SakuraAI Bloom's chat module enables natural and dynamic conversations. It leverages state-of-the-art language models to understand and respond contextually to user inputs. The chat module supports multi-turn conversations, making interactions more engaging.
+SakuraAI Bloom seamlessly integrates its chat and text generation module into a unified system. This module harnesses state-of-the-art language models for natural and dynamic conversations, ensuring comprehensive understanding and contextual responses to user inputs. Supporting multi-turn interactions, it elevates engagement levels.
 
-With the text generation module, SakuraAI Bloom can generate creative and contextually relevant text based on user prompts. Whether you need a story, poem, or any other textual content, this module delivers diverse and imaginative results.
+Moreover, the integrated text generation aspect excels in creating creative and contextually relevant text based on user prompts. Whether crafting a story, poem, or any textual content, this unified module delivers diverse and imaginative outcomes.
 
-The text generation module generates creative and contextually relevant text based on user prompts uses advanced language models to engage in dynamic conversations. It understands context and responds intelligently to user inputs. Explore different styles and themes by interacting with the bot. For implementation details, see [palmai_helper.py](bot/palmai_helper.py).
+The combined module utilizes advanced language models to engage in dynamic conversations, showcasing a deep understanding of context and providing intelligent responses. Users can explore various styles and themes by interacting with the bot, all within a seamlessly integrated system. For implementation details, see [palmai_helper.py](bot/palmai_helper.py).
 
 ### Image Generation Module
 
@@ -136,7 +136,7 @@ This flowchart illustrates the key steps and interactions in the operation of Sa
 
 ## Folder Scructure
 
-```c#
+```text
 sakuraAI_Bloom/
 │
 ├── bot/
