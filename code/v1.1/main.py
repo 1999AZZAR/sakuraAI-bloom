@@ -32,11 +32,12 @@ class BotHandler:
         self.db_manager = DatabaseManager()
         self.helper = helper_code
         self.user_last_responses = {}
-        self.WAITING_FOR_PROMPT, self.WAITING_FOR_STYLE, self.PROCESSING = range(3)
+        self.WAITING_FOR_PROMPT,self.WAITING_FOR_SIZE, self.WAITING_FOR_STYLE, self.PROCESSING = range(4)
         self.conv_handler = ConversationHandler(
             entry_points=[CommandHandler('image', self.image)],
             states={
                 self.WAITING_FOR_PROMPT: [MessageHandler(Filters.text & ~Filters.command, self.handle_image_prompt)],
+                self.WAITING_FOR_SIZE: [MessageHandler(Filters.text & ~Filters.command, self.handle_image_size)],
                 self.WAITING_FOR_STYLE: [MessageHandler(Filters.text & ~Filters.command, self.handle_image_style)],
             },
             fallbacks=[],
@@ -340,6 +341,21 @@ class BotHandler:
         if 'state' in context.user_data and context.user_data['state'] == self.WAITING_FOR_PROMPT:
             prompt = update.message.text
             context.user_data['prompt'] = prompt
+            size_keyboard = [
+                ["11:8", "16:9", "8:3"],
+                ["5:4","1:1","4:5"],
+                ["8:11", "9:16", "3:8"]
+            ]
+            reply_markup = ReplyKeyboardMarkup(size_keyboard, one_time_keyboard=True)
+            update.message.reply_text("Please select the preferred size for the image:", reply_markup=reply_markup)
+            context.user_data['state'] = self.WAITING_FOR_SIZE
+            return self.WAITING_FOR_SIZE
+
+    def handle_image_size(self, update, context):
+        chat_id = update.message.chat_id
+        if 'state' in context.user_data and context.user_data['state'] == self.WAITING_FOR_SIZE:
+            size = update.message.text
+            context.user_data['size'] = size
             style_keyboard = [
                 ["photographic", "enhance", "anime"],
                 ["digital-art", "comic-book", "fantasy-art"],
@@ -358,17 +374,22 @@ class BotHandler:
         if 'state' in context.user_data and context.user_data['state'] == self.WAITING_FOR_STYLE:
             style = update.message.text
             prompt = context.user_data.get('prompt', '')
+            size = context.user_data.get('size', 'square')
             context.user_data['state'] = self.PROCESSING
             reply_markup = ReplyKeyboardRemove()
             logging.info(f"generating image")
             message = update.message.reply_text("Processing...", reply_markup=reply_markup)
-            generated_image_path = self.helper.generate_image(prompt, style)
-            self.send_chat_action(update, context, ChatAction.UPLOAD_PHOTO)
-            with open(generated_image_path, "rb") as f:
-                context.bot.send_photo(chat_id, photo=f)
-            context.bot.delete_message(chat_id=chat_id, message_id=message.message_id)
-            os.remove(generated_image_path)
-            logging.info(f"Image successfully generated and sent to user {chat_id}")
+            generated_image_path = self.helper.generate_image(prompt, style, size)
+            if generated_image_path:
+                self.send_chat_action(update, context, ChatAction.UPLOAD_PHOTO)
+                with open(generated_image_path, "rb") as f:
+                    context.bot.send_photo(chat_id, photo=f)
+                context.bot.delete_message(chat_id=chat_id, message_id=message.message_id)
+                os.remove(generated_image_path)
+                logging.info(f"Image successfully generated and sent to user {chat_id}")
+            else:
+                logging.error(f"Error generating image for user {chat_id}")
+                context.bot.send_message(chat_id, "Sorry, there was an error generating the image. Please try again using another prompt.")
             return ConversationHandler.END
         return context.user_data.get('state', self.WAITING_FOR_PROMPT)
 

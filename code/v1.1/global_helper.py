@@ -90,12 +90,10 @@ class Helper:
         except Exception as e:
             print(f"Error in process_audio: {e}")
 
-    def generate_image(self, prompt, style="None"):
+    def generate_image(self, prompt, style="None", size="1:1"):
         api_key = os.getenv('STABILITY_API_KEY')
         common_params = {
             "samples": 1,
-            "height": 1024,
-            "width": 1024,
             "steps": 45,
             "cfg_scale": 3.7,
             "text_prompts": [
@@ -114,28 +112,48 @@ class Helper:
             ],
         }
 
+        size_mapping = {
+            "5:4": (1152, 896),
+            "11:8": (1216, 832),
+            "16:9": (1344, 768),
+            "8:3": (1536, 640),
+            "1:1": (1024, 1024),
+            "3:8": (640, 1536),
+            "4:5": (896, 1152),
+            "8:11": (832, 1216),
+            "9:16": (768, 1344),
+        }
+
+        if size in size_mapping:
+            common_params["height"], common_params["width"] = size_mapping[size]
+
         if style != "None":
             common_params["style_preset"] = style
         body = common_params.copy()
-        response = requests.post(
-            "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
-            headers={
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": f"Bearer {api_key}",
-            },
-            json=body,
-        )
 
-        if response.status_code != 200:
-            raise Exception("Non-200 response: " + str(response.text))
-        data = response.json()
-        output_directory = "./out"
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
-        for i, image in enumerate(data["artifacts"]):
-            with open(f'{output_directory}/txt2img_{image["seed"]}.png', "wb") as f:
-                f.write(base64.b64decode(image["base64"]))
-        return f'{output_directory}/txt2img_{data["artifacts"][0]["seed"]}.png'
+        try:
+            response = requests.post(
+                "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image",
+                headers={
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Authorization": f"Bearer {api_key}",
+                },
+                json=body,
+            )
+
+            if response.status_code != 200:
+                raise Exception("Non-200 response: " + str(response.text))
+            data = response.json()
+            output_directory = "./out"
+            if not os.path.exists(output_directory):
+                os.makedirs(output_directory)
+            for i, image in enumerate(data["artifacts"]):
+                with open(f'{output_directory}/txt2img_{image["seed"]}.png', "wb") as f:
+                    f.write(base64.b64decode(image["base64"]))
+            return f'{output_directory}/txt2img_{data["artifacts"][0]["seed"]}.png'
+        except Exception as e:
+            print(f"Error in generate_image: {e}")
+            return None
 
 helper_code = Helper()
