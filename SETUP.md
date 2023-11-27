@@ -48,7 +48,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
    Change into the project directory.
 
    ```bash
-   cd sakuraai-bloom
+   cd sakuraai-bloom/code
    ```
 
 3. **Create a Virtual Environment (Optional):**
@@ -109,7 +109,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
    Start SakuraAI Bloom by running:
 
    ```bash
-   python bot/main.py
+   python main.py
    ```
 
    The bot should now be active and ready to respond to your interactions.
@@ -121,6 +121,6 @@ Before you begin, make sure you have the following prerequisites installed on yo
 ## Additional Configuration (Optional)
 
 - Adjust the configuration in the `.env` file to customize the behavior of the bot.
-- Explore and modify the source code in the `bot` directory for advanced customization.
+- Explore and modify the source code in the project directory for advanced customization.
 
 That's it! You have successfully set up SakuraAI Bloom on your system. If you encounter any issues or have questions, refer to the documentation or seek assistance from the community. Happy interacting!

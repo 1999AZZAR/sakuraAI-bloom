@@ -30,19 +30,19 @@ SakuraAI Bloom seamlessly integrates its chat and text generation module into a 
 
 Moreover, the integrated text generation aspect excels in creating creative and contextually relevant text based on user prompts. Whether crafting a story, poem, or any textual content, this unified module delivers diverse and imaginative outcomes.
 
-The combined module utilizes advanced language models to engage in dynamic conversations, showcasing a deep understanding of context and providing intelligent responses. Users can explore various styles and themes by interacting with the bot, all within a seamlessly integrated system. For implementation details, see [palmai_helper.py](bot/palmai_helper.py).
+The combined module utilizes advanced language models to engage in dynamic conversations, showcasing a deep understanding of context and providing intelligent responses. Users can explore various styles and themes by interacting with the bot, all within a seamlessly integrated system. For implementation details, see [palmai_helper.py](code/v1.1/palmai_helper.py).
 
 ### Image Generation Module
 
-The image generation module allows SakuraAI Bloom to create visually stunning images based on provided prompts. Users can explore various styles and themes, enhancing their visual content creation experience.
+The image generation module allows SakuraAI Bloom to create visually stunning images based on provided prompts. Users can explore various styles and size, enhancing their visual content creation experience.
 
-SakuraAI Bloom's image generation module creates visually appealing images based on user prompts. Users can experiment with various styles for unique visual content. Implementation details can be found in [global_helper.py](bot/global_helper.py).
+SakuraAI Bloom's image generation module creates visually appealing images based on user prompts. Users can experiment with various styles for unique visual content. Implementation details can be found in [global_helper.py](code/v1.1/global_helper.py).
 
 ### User Data Management
 
 SakuraAI Bloom efficiently manages user-specific data through the user data management module. This includes storing and retrieving user interactions and preferences, creating a personalized experience for each user.
 
-The user data management module efficiently stores and retrieves user-specific data. It ensures a personalized experience by managing interactions and preferences. Refer to [datamanager.py](bot/datamanager.py) for implementation details.
+The user data management module efficiently stores and retrieves user-specific data. It ensures a personalized experience by managing interactions and preferences. Refer to [datamanager.py](code/v1.1/datamanager.py) for implementation details.
 
 ## Setup
 
