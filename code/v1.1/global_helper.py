@@ -150,7 +150,7 @@ class Image_gen:
             with open(generated_image_path, "wb") as f:
                 f.write(base64.b64decode(data["artifacts"][0]["base64"]))
             
-            watermark_image_path = '/media/azzar/Betha/Download/project/telegram bot/sakuraAI-Bloom/logo.png' 
+            watermark_image_path = 'logo.png' 
             output_with_watermark_path = generated_image_path
             self.add_watermark(generated_image_path, output_with_watermark_path, watermark_image_path, transparency=25)
             
