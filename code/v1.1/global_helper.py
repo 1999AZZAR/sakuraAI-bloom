@@ -4,7 +4,6 @@ import os
 import base64
 import requests
 import wikipediaapi
-import wikipedia
 import concurrent.futures
 import re
 import html
