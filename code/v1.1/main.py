@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, ConversationHandler
 from telegram import ChatAction, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.error import NetworkError
-from global_helper import helper_code, translate, image_gen, audio
+from global_helper import helper_code, translate, image_gen, audio, wikip
 from palmai_helper import palm_instance
 from datamanager import DatabaseManager
 
@@ -27,14 +27,25 @@ class BotHandler:
         self.updater = Updater(self.bot_token, use_context=True)
         self.dispatcher = self.updater.dispatcher
         self._add_CallbackQueryHandler()
-        self.MAX_MESSAGE_LENGTH = 2048 # 4096 max
+        self.MAX_MESSAGE_LENGTH = 3000 # 4096 max
         self.palm_instance = palm_instance
         self.db_manager = DatabaseManager()
         self.helper = helper_code
         self.translate = translate
-        self.image_gen = image_gen
-        self.audio = audio
         self.user_last_responses = {}
+        self.audio = audio
+        
+        self.wikip =wikip
+        self.SEARCH = range(1)
+        self.wiki_conv_handler = ConversationHandler(
+            entry_points=[CommandHandler('wiki', self.start_search)],
+            states={
+                self.SEARCH: [MessageHandler(Filters.text, self.search)],
+            },
+            fallbacks=[],
+        )
+        
+        self.image_gen = image_gen
         self.WAITING_FOR_PROMPT,self.WAITING_FOR_SIZE, self.WAITING_FOR_STYLE, self.PROCESSING = range(4)
         self.conv_handler = ConversationHandler(
             entry_points=[CommandHandler('image', self.image)],
@@ -57,7 +68,8 @@ class BotHandler:
         self.dispatcher.add_handler(CommandHandler("elaborate", self.elaborate))
         self.dispatcher.add_handler(CommandHandler("generalize", self.generalize))
         self.dispatcher.add_handler(self.conv_handler)
-        
+        self.dispatcher.add_handler(self.wiki_conv_handler)
+
     def _add_CallbackQueryHandler(self):
         self.dispatcher.add_handler(CallbackQueryHandler(self.button_click))
 
@@ -126,11 +138,12 @@ class BotHandler:
                 chunks = [response[i:i + self.MAX_MESSAGE_LENGTH] for i in range(0, len(response), self.MAX_MESSAGE_LENGTH)]
                 for index, chunk in enumerate(chunks):
                     reply_markup = self.get_inline_keyboard(data_id, index, len(chunks))
+                    chunk = re.sub(r'\] \(', '](', chunk, flags=re.IGNORECASE)
                     try:
-                        context.bot.send_message(chat_id=update.effective_chat.id, text=chunk, parse_mode="MARKDOWN", reply_markup=reply_markup)
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=chunk, parse_mode="MARKDOWN", reply_markup=reply_markup, disable_web_page_preview=False)
                     except telegram.error.BadRequest:
-                        chunk = html.escape(chunk)
-                        context.bot.send_message(chat_id=update.effective_chat.id, text=chunk, reply_markup=reply_markup)
+                        # chunk = html.escape(chunk)
+                        context.bot.send_message(chat_id=update.effective_chat.id, text=chunk, reply_markup=reply_markup, disable_web_page_preview=False)
             if response is None:
                 message = ("I'm sorry, but an unexpected problem has occurred. If you wish, you can try again later.", 'en')
                 self.send_message(update, context, message)
@@ -351,9 +364,9 @@ class BotHandler:
             prompt = update.message.text
             context.user_data['prompt'] = prompt
             size_keyboard = [
-                ["11:8", "16:9", "8:3"],
-                ["5:4","1:1","4:5"],
-                ["8:11", "9:16", "3:8"]
+                ["landscape", "widescreen", "panorama"],
+                ["square-l","square","square-p"],
+                ["portrait", "highscreen", "panorama-p"]
             ]
             reply_markup = ReplyKeyboardMarkup(size_keyboard, one_time_keyboard=True)
             update.message.reply_text("Please select the preferred size for the image:", reply_markup=reply_markup)
@@ -401,6 +414,23 @@ class BotHandler:
                 context.bot.send_message(chat_id, "Sorry, there was an error generating the image. Please try again using another prompt.")
             return ConversationHandler.END
         return context.user_data.get('state', self.WAITING_FOR_PROMPT)
+
+    def start_search(self, update, context):
+        update.message.reply_text("Please enter your search query:")
+        return self.SEARCH
+
+    def search(self, update, context):
+        user_id = update.message.from_user.id
+        if self.helper.is_user(user_id):
+            user_input = html.escape(update.message.text)
+            translated_input = self.translate.translate_input(user_input)
+            self.send_chat_action(update, context, ChatAction.TYPING)
+            results = self.wikip.search(translated_input[0])
+            message = self.translate.translate_output(results, translated_input[1])
+        else:
+            message = (f"Apologies, you lack the necessary authorization to utilize my services.")
+        self.send_message(update, context, message)
+        return ConversationHandler.END
 
     def run(self):
         self._add_command_handlers()

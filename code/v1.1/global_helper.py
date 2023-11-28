@@ -3,8 +3,12 @@
 import os
 import base64
 import requests
+import wikipediaapi
+import wikipedia
 import concurrent.futures
 import re
+import html
+
 from PIL import Image, ImageEnhance
 from pydub import AudioSegment
 from gtts import gTTS
@@ -86,7 +90,7 @@ class Image_gen:
         watermark.putalpha(alpha)
         image_with_watermark.save(output_image_path)
 
-    def generate_image(self, prompt, style="None", size="1:1"):
+    def generate_image(self, prompt, style="None", size="square"):
         api_key = os.getenv('STABILITY_API_KEY')
         common_params = {
             "samples": 1,
@@ -94,30 +98,30 @@ class Image_gen:
             "cfg_scale": 3.7,
             "text_prompts": [
                 {
-                    "text": prompt, 
+                    "text"  : prompt, 
                     "weight": 0.9
                 },
                 {
-                    "text": "The artwork showcases excellent anatomy with a clear, complete, and appealing depiction. It has well-proportioned and polished details, presenting a unique and balanced composition. The high-resolution image is undamaged and well-formed, conveying a healthy and natural appearance without mutations or blemishes. The positive aspect of the artwork is highlighted by its skillful framing and realistic features, including a well-drawn face and hands. The absence of signatures contributes to its seamless and authentic quality, and the depiction of straight fingers adds to its overall attractiveness.",
+                    "text"  : "The artwork showcases excellent anatomy with a clear, complete, and appealing depiction. It has well-proportioned and polished details, presenting a unique and balanced composition. The high-resolution image is undamaged and well-formed, conveying a healthy and natural appearance without mutations or blemishes. The positive aspect of the artwork is highlighted by its skillful framing and realistic features, including a well-drawn face and hands. The absence of signatures contributes to its seamless and authentic quality, and the depiction of straight fingers adds to its overall attractiveness.",
                     "weight": 0.1
                 },
                 {
-                    "text": "2 faces, 2 heads, bad anatomy, blurry, cloned face, cropped image, cut-off, deformed hands, disconnected limbs, disgusting, disfigured, draft, duplicate artifact, extra fingers, extra limb, floating limbs, gloss proportions, grain, gross proportions, long body, long neck, low-res, mangled, malformed, malformed hands, missing arms, missing limb, morbid, mutation, mutated, mutated hands, mutilated, mutilated hands, multiple heads, negative aspect, out of frame, poorly drawn, poorly drawn face, poorly drawn hands, signatures, surreal, tiling, twisted fingers, ugly",
+                    "text"  : "2 faces, 2 heads, bad anatomy, blurry, cloned face, cropped image, cut-off, deformed hands, disconnected limbs, disgusting, disfigured, draft, duplicate artifact, extra fingers, extra limb, floating limbs, gloss proportions, grain, gross proportions, long body, long neck, low-res, mangled, malformed, malformed hands, missing arms, missing limb, morbid, mutation, mutated, mutated hands, mutilated, mutilated hands, multiple heads, negative aspect, out of frame, poorly drawn, poorly drawn face, poorly drawn hands, signatures, surreal, tiling, twisted fingers, ugly",
                     "weight": -1
                 },
             ],
         }
 
         size_mapping = {
-            "5:4": (1152, 896),
-            "11:8": (1216, 832),
-            "16:9": (1344, 768),
-            "8:3": (1536, 640),
-            "1:1": (1024, 1024),
-            "3:8": (640, 1536),
-            "4:5": (896, 1152),
-            "8:11": (832, 1216),
-            "9:16": (768, 1344),
+            "square-p"  : (1152, 896),
+            "portrait"  : (1216, 832),
+            "highscreen": (1344, 768),
+            "panorama-p": (1536, 640),
+            "square"    : (1024, 1024),
+            "panorama"  : (640, 1536),
+            "square-l"  : (896, 1152),
+            "landscape" : (832, 1216),
+            "widescreen": (768, 1344),
         }
 
         if size in size_mapping:
@@ -147,7 +151,7 @@ class Image_gen:
             with open(generated_image_path, "wb") as f:
                 f.write(base64.b64decode(data["artifacts"][0]["base64"]))
             
-            watermark_image_path = 'logo.png' 
+            watermark_image_path = '/media/azzar/Betha/Download/project/telegram bot/sakuraAI-Bloom/logo.png' 
             output_with_watermark_path = generated_image_path
             self.add_watermark(generated_image_path, output_with_watermark_path, watermark_image_path, transparency=25)
             
@@ -174,6 +178,7 @@ class Translator:
 
     def translate_output(self, response, user_lang):
         if user_lang != 'en':
+            response = html.escape(response)
             url = f"https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl={user_lang}&q={response}"
             headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'}
 
@@ -186,7 +191,26 @@ class Translator:
 
         return response, user_lang
 
+class Wikip:
+    def __init__(self):
+        self.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+        self.wikipedia = wikipediaapi.Wikipedia('en', headers={'User-Agent': self.user_agent})
+
+    def search(self, user_input):
+        raw_query = user_input
+        page = self.wikipedia.page(raw_query)
+
+        if page.exists():
+            summary = page.summary[0:500]
+            link = f"\n\nRead more: [Wikipedia]({page.fullurl})"
+            full_response = summary + link
+        else:
+            full_response = f"No results found for that search."
+
+        return full_response
+
 helper_code = Helper()
 translate = Translator()
 image_gen = Image_gen()
 audio = Audio()
+wikip = Wikip()

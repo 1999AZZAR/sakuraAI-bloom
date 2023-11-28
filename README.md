@@ -186,6 +186,10 @@ I would like to acknowledge the foundational work and separate modules that cont
    - [Repository](https://github.com/1999AZZAR/Telegram-Bot-Playground)
    - This module encompasses additional functionalities such as text-to-speech (TTS) and translation, adding versatility to SakuraAI Bloom's capabilities. The Palm prototyping is done using [MakerSuite](https://makersuite.google.com/).
 
+4. **Wikipedia Telegram Bot:**
+   - [Repository](https://github.com/1999AZZAR/wikipedia-powered-telegram-bot/tree/simple)
+   - This Python script implements a Telegram bot that leverages the Wikipedia API to provide information in response to user queries.
+
 I appreciate the effort and innovation invested in each module, and extend thanks to [Stability AI](https://platform.stability.ai/) and [Google's Palm2 Project](https://ai.google/discover/palm2/) for providing the APIs that enhance SakuraAI Bloom's functionality.
 
 ## Contributing
