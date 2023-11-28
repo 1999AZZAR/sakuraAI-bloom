@@ -8,6 +8,7 @@ SakuraAI Bloom is an advanced chatbot with versatile capabilities, designed to e
 2. [Features and Details](#features-and-details)
     - [Text Generation and chat Module](#text-generation-and-chat-module)
     - [Image Generation Module](#image-generation-module)
+    - [Wikipedia Module](#wikipedia-module)
     - [User Data Management](#user-data-management)
 3. [Setup](#setup)
 4. [Usage](#usage)
@@ -37,6 +38,12 @@ The combined module utilizes advanced language models to engage in dynamic conve
 The image generation module allows SakuraAI Bloom to create visually stunning images based on provided prompts. Users can explore various styles and size, enhancing their visual content creation experience.
 
 SakuraAI Bloom's image generation module creates visually appealing images based on user prompts. Users can experiment with various styles for unique visual content. Implementation details can be found in [global_helper.py](code/v1.1/global_helper.py).
+
+### Wikipedia module
+
+The wikipedia module allows SakuraAI Bloom to search information direcly from [wikipedia.org](https://www.wikipedia.org/)
+
+SakuraAI Bloom's wikipedia module Implementation details can be found in [global_helper.py](code/v1.1/global_helper.py).
 
 ### User Data Management
 
@@ -80,7 +87,8 @@ end
 
 subgraph External APIs
   B -->|Utilizes Palm API| J{Text Generation or Chat}
-  B -->|Utilizes Stability API| K{Image Generation}
+  B -->|Utilizes Stability API| K{Generate requested Image}
+  B -->|Utilizes wikipedia API| M{Search for wikipedia page}
 end
 
 subgraph Logging
