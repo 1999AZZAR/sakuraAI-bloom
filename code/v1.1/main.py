@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, ConversationHandler
 from telegram import ChatAction, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.error import NetworkError
-from global_helper import helper_code
+from global_helper import helper_code, translate, image_gen, audio
 from palmai_helper import palm_instance
 from datamanager import DatabaseManager
 
@@ -31,6 +31,9 @@ class BotHandler:
         self.palm_instance = palm_instance
         self.db_manager = DatabaseManager()
         self.helper = helper_code
+        self.translate = translate
+        self.image_gen = image_gen
+        self.audio = audio
         self.user_last_responses = {}
         self.WAITING_FOR_PROMPT,self.WAITING_FOR_SIZE, self.WAITING_FOR_STYLE, self.PROCESSING = range(4)
         self.conv_handler = ConversationHandler(
@@ -52,6 +55,7 @@ class BotHandler:
         self.dispatcher.add_handler(CommandHandler("paraphrase", self.paraphrase))
         self.dispatcher.add_handler(CommandHandler("summarize", self.summarize))
         self.dispatcher.add_handler(CommandHandler("elaborate", self.elaborate))
+        self.dispatcher.add_handler(CommandHandler("generalize", self.generalize))
         self.dispatcher.add_handler(self.conv_handler)
         
     def _add_CallbackQueryHandler(self):
@@ -90,12 +94,12 @@ class BotHandler:
         if self.helper.is_user(user_id):
             user_input = html.escape(update.message.text)
             logging.info(f"got {update.message.from_user.first_name} as user with id {user_id}, input: {user_input}")
-            translated_input = self.helper.translate_input(user_input)
+            translated_input = self.translate.translate_input(user_input)
             user_input = translated_input[0]
             response = self.palm_instance.generate_chat(user_input)
             if response is not None:
                 response = re.sub(r"\bI am a large language model\b", "my name is Sakura", response, flags=re.IGNORECASE)
-                message = self.helper.translate_output(response, f"{translated_input[1]}")
+                message = self.translate.translate_output(response, f"{translated_input[1]}")
             else:
                 message = [f"I'm sorry, but an unexpected problem has occurred. If you wish, you can try again later."]
         else:
@@ -181,8 +185,9 @@ class BotHandler:
 
     def handle_tts(self, update, context, response_text):
         if response_text:
+            logging.info(f"asking for TTS")
             self.send_chat_action(update, context, ChatAction.RECORD_AUDIO)
-            self.helper.tts(response_text)
+            self.audio.tts(response_text)
             self.send_chat_action(update, context, ChatAction.UPLOAD_AUDIO)
             context.bot.send_voice(chat_id=update.callback_query.message.chat_id, voice=open('voice.mp3', 'rb'))
             os.remove('voice.mp3')
@@ -205,7 +210,7 @@ class BotHandler:
             if translated_input:
                 command = self.get_command(action)
                 response = self.palm_instance.generate_text(f"{command} + {translated_input[0]}")
-                message = self.helper.translate_output(response, f"{translated_input[1]}")
+                message = self.translate.translate_output(response, f"{translated_input[1]}")
             else:
                 message = ("An unexpected problem has occurred. If you wish, you can try again later.", 'en')
         else:
@@ -218,18 +223,19 @@ class BotHandler:
             user_input = ' '.join(user_input)
             logging.info(f"User selected the command with input: {user_input}")
             message = f"{user_input}"
-            translated_input = self.helper.translate_input(message)
+            translated_input = self.translate.translate_input(message)
         else:
             message = self.user_last_responses[user_id]
-            translated_input = self.helper.translate_input({message})
+            translated_input = self.translate.translate_input({message})
 
         return translated_input
 
     def get_command(self, action):
         commands = {
-            'summarize': "summarize this for me make it more simple and shorter but understandable:",
-            'paraphrase': "paraphrase the following text by proofreading, rewording, and/or rephrasing it. I'm looking for a refined version that maintains clarity and coherence.:",
-            'elaborate': "Elaborate this make it longer by providing more details, but ensure it remains understandable.:",
+            'summarize': "summarize this for me make it more simple and shorter but understandable: \n",
+            'paraphrase': "paraphrase the following text by proofreading, rewording, and/or rephrasing it. I'm looking for a refined version that maintains clarity and coherence.: \n",
+            'elaborate': "Elaborate this make it longer by providing more details, but ensure it remains understandable.: \n",
+            'generalize': "generalize this statement, eliminate the specifics and make it more organized and comprehensible.: \n",
         }
         return commands.get(action, "")
 
@@ -241,6 +247,9 @@ class BotHandler:
 
     def elaborate(self, update, context):
         self.handle_text_generation(update, context, 'elaborate')
+
+    def generalize(self, update, context):
+        self.handle_text_generation(update, context, 'generalize')
 
     def handle_user_info_not_available(self, update, context):
         message = ("User information not available.", 'en')
@@ -306,9 +315,9 @@ class BotHandler:
                 user_input = ' '.join(user_input)
                 logging.info(f"User selected the command with input: {user_input}")
                 command = f"{command_template} + {user_input}"
-                translated_input = self.helper.translate_input(user_input)
+                translated_input = self.translate.translate_input(user_input)
                 response = self.palm_instance.generate_chat(command)
-                message = self.helper.translate_output(response, translated_input[1])
+                message = self.translate.translate_output(response, translated_input[1])
             else:
                 message = (f"Please provide your argument after the command, as \"{command_template}\" + your argument", 'en')
         else:
@@ -379,7 +388,7 @@ class BotHandler:
             reply_markup = ReplyKeyboardRemove()
             logging.info(f"generating image")
             message = update.message.reply_text("Processing...", reply_markup=reply_markup)
-            generated_image_path = self.helper.generate_image(prompt, style, size)
+            generated_image_path = self.image_gen.generate_image(prompt, style, size)
             if generated_image_path:
                 self.send_chat_action(update, context, ChatAction.UPLOAD_PHOTO)
                 with open(generated_image_path, "rb") as f:

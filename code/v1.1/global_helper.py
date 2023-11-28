@@ -5,7 +5,6 @@ import base64
 import requests
 import concurrent.futures
 import re
-
 from PIL import Image, ImageEnhance
 from pydub import AudioSegment
 from gtts import gTTS
@@ -24,35 +23,7 @@ class Helper:
     def is_admin(self, user_id):
         return '*' in self.allowed_admins or str(user_id) in self.allowed_admins
 
-    def translate_input(self, user_input):
-        url = f"https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=en&q={user_input}"
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
-        }
-        try:
-            request_result = requests.get(url, headers=headers).json()
-            user_input = request_result[0][0]
-            user_lang = request_result[0][1]
-            return user_input, user_lang
-        except Exception as e:
-            print(f"Error in translate_input: {e}")
-            return user_input, 'en'
-
-    def translate_output(self, response, user_lang):
-        if user_lang != 'en':
-            url = f"https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl={user_lang}&q={response}"
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
-            }
-            try:
-                request_result = requests.get(url, headers=headers).json()
-                response = request_result[0]
-                return response, user_lang
-            except Exception as e:
-                print(f"Error in translate_output: {e}")
-                return response, user_lang
-        else:
-            return response, user_lang
+class Audio:
 
     def tts(self, last_response):
         if last_response is not None:
@@ -91,6 +62,8 @@ class Helper:
             os.remove('voice_raw.mp3')
         except Exception as e:
             print(f"Error in process_audio: {e}")
+
+class Image_gen:
 
     def add_watermark(self, input_image_path, output_image_path, watermark_image_path, transparency=25):
         if watermark_image_path is None:
@@ -183,4 +156,37 @@ class Helper:
             print(f"Error in generate_image: {e}")
             return None
 
+class Translator:
+
+    def translate_input(self, user_input):
+        url = f"https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=en&q={user_input}"
+        headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'}
+
+        try:
+            request_result = requests.get(url, headers=headers).json()
+            user_input = request_result[0][0]
+            user_lang = request_result[0][1]
+        except Exception as e:
+            print(f"Error in translate_input: {e}")
+            user_input, user_lang = user_input, 'en'
+
+        return user_input, user_lang
+
+    def translate_output(self, response, user_lang):
+        if user_lang != 'en':
+            url = f"https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl={user_lang}&q={response}"
+            headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'}
+
+            try:
+                request_result = requests.get(url, headers=headers).json()
+                response = request_result[0]
+            except Exception as e:
+                print(f"Error in translate_output: {e}")
+                response = response
+
+        return response, user_lang
+
 helper_code = Helper()
+translate = Translator()
+image_gen = Image_gen()
+audio = Audio()
