@@ -59,9 +59,11 @@ To set up SakuraAI Bloom, follow the instructions in the [SETUP.md](SETUP.md) fi
 
 To use SakuraAI Bloom, interact with it through your preferred messaging platform. Simply start a conversation, provide prompts for text or image generation, and enjoy the personalized and creative responses.
 
-### Example
+### Example and demo
 
 Explore SakuraAI Bloom in action on [Telegram](https://t.me/SakuraAI_bot). Engage in dynamic conversations, generate creative text, and experiment with image creation. Enjoy the personalized and imaginative responses!
+
+[![SakuraAi Youtube Demo](https://img.youtube.com/vi/FJao24j_6tE/0.jpg)](https://www.youtube.com/watch?v=FJao24j_6tE)
 
 ## Flowchart
 
