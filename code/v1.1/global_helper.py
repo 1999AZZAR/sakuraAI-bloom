@@ -69,25 +69,29 @@ class Audio:
 class Image_gen:
 
     def add_watermark(self, input_image_path, output_image_path, watermark_image_path, transparency=25):
-        if watermark_image_path is None:
+        if watermark_image_path is None or not os.path.exists(watermark_image_path):
             original_image = Image.open(input_image_path)
             original_image.save(output_image_path)
             return
 
-        original_image = Image.open(input_image_path)
-        watermark = Image.open(watermark_image_path)
-        min_dimension = min(original_image.width, original_image.height)
-        watermark_size = (int(min_dimension * 0.14), int(min_dimension * 0.14))
-        watermark = watermark.resize(watermark_size)
-        if watermark.mode != 'RGBA':
-            watermark = watermark.convert('RGBA')
-        image_with_watermark = original_image.copy()
-        position = (0, original_image.size[1] - watermark.size[1])
-        image_with_watermark.paste(watermark, position, watermark)
-        alpha = watermark.split()[3]
-        alpha = ImageEnhance.Brightness(alpha).enhance(transparency / 100.0)
-        watermark.putalpha(alpha)
-        image_with_watermark.save(output_image_path)
+        try:
+            original_image = Image.open(input_image_path)
+            watermark = Image.open(watermark_image_path)
+            min_dimension = min(original_image.width, original_image.height)
+            watermark_size = (int(min_dimension * 0.14), int(min_dimension * 0.14))
+            watermark = watermark.resize(watermark_size)
+            if watermark.mode != 'RGBA':
+                watermark = watermark.convert('RGBA')
+            image_with_watermark = original_image.copy()
+            position = (0, original_image.size[1] - watermark.size[1])
+            image_with_watermark.paste(watermark, position, watermark)
+            alpha = watermark.split()[3]
+            alpha = ImageEnhance.Brightness(alpha).enhance(transparency / 100.0)
+            watermark.putalpha(alpha)
+            image_with_watermark.save(output_image_path)
+        except Exception as e:
+            print(f"Error adding watermark: {e}")
+            original_image.save(output_image_path)
 
     def generate_image(self, prompt, style="None", size="square"):
         api_key = os.getenv('STABILITY_API_KEY')

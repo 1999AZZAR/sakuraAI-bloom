@@ -245,9 +245,9 @@ class BotHandler:
 
     def get_command(self, action):
         commands = {
-            'summarize': "summarize this for me make it more simple and shorter but understandable: \n",
+            'summarize' : "summarize this for me make it more simple and shorter but understandable: \n",
             'paraphrase': "paraphrase the following text by proofreading, rewording, and/or rephrasing it. I'm looking for a refined version that maintains clarity and coherence.: \n",
-            'elaborate': "Elaborate this make it longer by providing more details, but ensure it remains understandable.: \n",
+            'elaborate' : "Elaborate this make it longer by providing more details, but ensure it remains understandable.: \n",
             'generalize': "generalize this statement, eliminate the specifics and make it more organized and comprehensible.: \n",
         }
         return commands.get(action, "")
@@ -285,6 +285,7 @@ class BotHandler:
                 "\n2. Question And Answer 🤓",
                 "- /detailed - Seek a detailed answer.",
                 "- /simple   - Request a straightforward answer.",
+                "- /wiki - Search for wikipedia."
                 "\n3. System Set ⚙️",
                 "- /start - Initiate a conversation with me.",
                 "- /help  - Reveal this helpful menu.",
@@ -332,7 +333,7 @@ class BotHandler:
                 response = self.palm_instance.generate_chat(command)
                 message = self.translate.translate_output(response, translated_input[1])
             else:
-                message = (f"Please provide your argument after the command, as \"{command_template}\" + your argument", 'en')
+                message = (f"Please pass your argument directly after the command.", 'en')
         else:
             message = (f"Apologies, you lack the necessary authorization to utilize my services.", 'en')
 
